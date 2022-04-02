@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Project Properties -->
+
+    <!-- Header -->
+    <AssemblyName>AbbLab.Extensions</AssemblyName>
+    <PackageId>$(AssemblyName)</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Abbysssal</Authors>
+    <Company>$(Authors)</Company>
+    <Copyright></Copyright>
+
+    <!-- Title, Description, Tags -->
+    <Title>$(AssemblyName)</Title>
+    <Description>
+
+    </Description>
+    <PackageTags></PackageTags>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
+  </ItemGroup>
+
+</Project>

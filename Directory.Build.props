@@ -1,0 +1,32 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Project Properties -->
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <!-- Targets -->
+    <TargetFrameworks>
+      netstandard2.1;
+      netcoreapp3.1;
+      net5.0;
+      net6.0
+    </TargetFrameworks>
+
+    <!-- Repository -->
+    <PackageProjectUrl>https://github.com/SugarBarrel/AbbLab</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SugarBarrel/AbbLab.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>main</RepositoryBranch>
+
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <NoWarn>$(NoWarn),1591</NoWarn> <!-- Suppress the 'Missing XML Documentation' warning -->
+  </PropertyGroup>
+
+</Project>
