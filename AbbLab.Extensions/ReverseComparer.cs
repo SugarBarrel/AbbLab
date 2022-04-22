@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace AbbLab.Extensions
 {
@@ -10,13 +11,13 @@ namespace AbbLab.Extensions
 
         public ReverseComparer(IComparer<T?> comparer) => Comparer = comparer;
 
-        public int Compare(T? a, T? b)
+        [Pure] public int Compare(T? a, T? b)
         {
             if (b is null) return a is null ? 0 : -1;
             if (a is null) return 1;
             return -Comparer.Compare(a, b);
         }
-        int IComparer.Compare(object? a, object? b)
+        [Pure] int IComparer.Compare(object? a, object? b)
         {
             if (b is null) return a is null ? 0 : -1;
             if (a is null) return 1;
@@ -31,7 +32,7 @@ namespace AbbLab.Extensions
 
         public static ReverseComparer<T?> Default { get; } = new ReverseComparer<T?>(Comparer<T?>.Default);
 
-        public static ReverseComparer<T?> Create(Func<T?, T?, int> comparison)
+        [Pure] public static ReverseComparer<T?> Create(Func<T?, T?, int> comparison)
             => new ReverseComparer<T?>(Comparer<T?>.Create(comparison.Invoke));
 
     }

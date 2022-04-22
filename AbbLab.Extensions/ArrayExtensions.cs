@@ -115,7 +115,7 @@ namespace AbbLab.Extensions
         public static void Sort<T>(this T[] array, int startIndex, int count, [InstantHandle] Comparison<T> comparison)
             => Array.Sort(array, startIndex, count, Comparer<T>.Create(comparison));
 
-        public static TResult[] Cast<TResult>(this Array array)
+        [Pure] public static TResult[] Cast<TResult>(this Array array)
         {
             int length = array.Length;
             TResult[] result = new TResult[length];
@@ -123,7 +123,7 @@ namespace AbbLab.Extensions
                 result[i] = (TResult)array.GetValue(i)!;
             return result;
         }
-        public static TResult[] OfType<TResult>(this Array array)
+        [Pure] public static TResult[] OfType<TResult>(this Array array)
         {
             List<TResult> list = new List<TResult>();
             for (int i = 0, length = array.Length; i < length; i++)
