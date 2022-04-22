@@ -27,7 +27,7 @@ namespace AbbLab.SemanticVersioning
             }
         }
 
-        private readonly string[] _buildMetadata;
+        internal readonly string[] _buildMetadata;
         private ReadOnlyCollection<string>? _buildMetadataReadonly;
         public ReadOnlyCollection<string> BuildMetadata
         {
