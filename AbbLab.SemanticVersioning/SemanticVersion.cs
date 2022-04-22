@@ -61,6 +61,9 @@ namespace AbbLab.SemanticVersioning
             if (major < 0) throw new ArgumentOutOfRangeException(nameof(major), major, Exceptions.MajorNegative);
             if (minor < 0) throw new ArgumentOutOfRangeException(nameof(minor), minor, Exceptions.MinorNegative);
             if (patch < 0) throw new ArgumentOutOfRangeException(nameof(patch), patch, Exceptions.PatchNegative);
+            Major = major;
+            Minor = minor;
+            Patch = patch;
 
             SemanticPreRelease[] preReleasesArray;
             if (preReleases is not null && (preReleasesArray = preReleases.ToArray()).Length > 0)
