@@ -132,5 +132,19 @@ namespace AbbLab.Extensions
             return list.ToArray();
         }
 
+        public static void Shuffle<T>(this T[] array)
+            => Shuffle(array, new Random());
+        public static void Shuffle<T>(this T[] array, Random rnd)
+        {
+            int i = array.Length;
+            while (i > 1)
+            {
+                int index = rnd.Next(i--);
+                T value = array[index];
+                array[index] = array[i];
+                array[i] = value;
+            }
+        }
+
     }
 }
