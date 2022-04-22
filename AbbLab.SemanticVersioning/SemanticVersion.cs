@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using AbbLab.Extensions;
 using JetBrains.Annotations;
@@ -95,8 +96,12 @@ namespace AbbLab.SemanticVersioning
             _buildMetadata = Array.Empty<string>();
         }
 
-        [Pure] public static explicit operator SemanticVersion(Version systemVersion) => new SemanticVersion(systemVersion);
-        [Pure] public static explicit operator Version(SemanticVersion version) => new Version(version.Major, version.Minor, version.Patch);
+        [Pure] [return: NotNullIfNotNull("systemVersion")]
+        public static explicit operator SemanticVersion?(Version? systemVersion)
+            => systemVersion is null ? null : new SemanticVersion(systemVersion);
+        [Pure] [return: NotNullIfNotNull("version")]
+        public static explicit operator Version?(SemanticVersion? version)
+            => version is null ? null : new Version(version.Major, version.Minor, version.Patch);
 
         [Pure] public bool Equals(SemanticVersion? other)
         {
