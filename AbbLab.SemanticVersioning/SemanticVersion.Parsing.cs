@@ -13,18 +13,17 @@ namespace AbbLab.SemanticVersioning
             int pos = 0;
             int length = text.Length;
 
-            int start = pos; // set major's beginning
             while (pos < length && text[pos] is >= '0' and <= '9') pos++;
-            if (pos == start) return SemanticErrorCode.MajorNotFound;
-            if (text[start] is '0' && pos > start + 1) return SemanticErrorCode.MajorLeadingZeroes;
-            int major = Utility.SimpleParse(text[start..pos]);
+            if (pos is 0) return SemanticErrorCode.MajorNotFound;
+            if (text[0] is '0' && pos > 1) return SemanticErrorCode.MajorLeadingZeroes;
+            int major = Utility.SimpleParse(text[..pos]);
             if (major is -1) return SemanticErrorCode.MajorTooBig;
             // read major
 
             if (pos >= length || text[pos] is not '.') return SemanticErrorCode.MinorNotFound;
             pos++; // skip '.'
 
-            start = pos; // set minor's beginning
+            int start = pos; // set minor's beginning
             while (pos < length && text[pos] is >= '0' and <= '9') pos++;
             if (pos == start) return SemanticErrorCode.MinorNotFound;
             if (text[start] is '0' && pos > start + 1) return SemanticErrorCode.MinorLeadingZeroes;
