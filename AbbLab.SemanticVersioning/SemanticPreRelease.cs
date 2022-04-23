@@ -18,8 +18,8 @@ namespace AbbLab.SemanticVersioning
         public SemanticPreRelease(ReadOnlySpan<char> identifier) => this = Parse(identifier);
 
         [Pure] public static implicit operator SemanticPreRelease(int identifier) => new SemanticPreRelease(identifier);
-        [Pure] public static implicit operator SemanticPreRelease(string identifier) => new SemanticPreRelease(identifier);
-        [Pure] public static implicit operator SemanticPreRelease(ReadOnlySpan<char> identifier) => new SemanticPreRelease(identifier);
+        [Pure] public static implicit operator SemanticPreRelease(string identifier) => Parse(identifier);
+        [Pure] public static implicit operator SemanticPreRelease(ReadOnlySpan<char> identifier) => Parse(identifier);
         [Pure] public static explicit operator int(SemanticPreRelease preRelease) => preRelease.Number;
         [Pure] public static explicit operator string(SemanticPreRelease preRelease) => preRelease.Text;
         [Pure] public static explicit operator ReadOnlySpan<char>(SemanticPreRelease preRelease) => preRelease.Text.AsSpan();
