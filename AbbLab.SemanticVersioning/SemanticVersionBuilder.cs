@@ -102,20 +102,11 @@ namespace AbbLab.SemanticVersioning
         }
 
         public SemanticVersionBuilder AppendPreRelease(int identifier)
-        {
-            _preReleases.Add(new SemanticPreRelease(identifier));
-            return this;
-        }
+            => AppendPreRelease(new SemanticPreRelease(identifier));
         public SemanticVersionBuilder AppendPreRelease(string identifier)
-        {
-            _preReleases.Add(SemanticPreRelease.Parse(identifier));
-            return this;
-        }
+            => AppendPreRelease(SemanticPreRelease.Parse(identifier));
         public SemanticVersionBuilder AppendPreRelease(ReadOnlySpan<char> identifier)
-        {
-            _preReleases.Add(SemanticPreRelease.Parse(identifier));
-            return this;
-        }
+            => AppendPreRelease(SemanticPreRelease.Parse(identifier));
         public SemanticVersionBuilder AppendPreRelease(SemanticPreRelease identifier)
         {
             _preReleases.Add(identifier);
