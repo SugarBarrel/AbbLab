@@ -28,6 +28,8 @@ namespace AbbLab.SemanticVersioning
         public string Text => text ?? throw new InvalidOperationException(Exceptions.PreReleaseNotAlphanumeric);
         public int Number => text is null ? number : throw new InvalidOperationException(Exceptions.PreReleaseNotNumeric);
 
+        public static readonly SemanticPreRelease Zero = new SemanticPreRelease(0);
+
         [Pure] public bool Equals(SemanticPreRelease other)
             => text is null ? other.text is null && number == other.number : text == other.text;
         [Pure] public override bool Equals(object? obj)
