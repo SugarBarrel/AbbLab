@@ -122,24 +122,6 @@ namespace AbbLab.SemanticVersioning
             return this;
         }
 
-        public SemanticVersionBuilder AppendPreReleases([InstantHandle] IEnumerable<int> identifiers)
-        {
-            foreach (int preRelease in identifiers)
-                _preReleases.Add(new SemanticPreRelease(preRelease));
-            return this;
-        }
-        public SemanticVersionBuilder AppendPreReleases([InstantHandle] IEnumerable<string> identifiers)
-        {
-            foreach (string preRelease in identifiers)
-                _preReleases.Add(SemanticPreRelease.Parse(preRelease));
-            return this;
-        }
-        public SemanticVersionBuilder AppendPreReleases([InstantHandle] IEnumerable<SemanticPreRelease> identifiers)
-        {
-            _preReleases.AddRange(identifiers);
-            return this;
-        }
-
         public SemanticVersionBuilder ClearPreReleases()
         {
             _preReleases.Clear();
@@ -162,12 +144,6 @@ namespace AbbLab.SemanticVersioning
             if (!Utility.IsValidIdentifier(identifier))
                 throw new ArgumentException(Exceptions.BuildMetadataInvalid, nameof(identifier));
             _buildMetadata.Add(new string(identifier));
-            return this;
-        }
-        public SemanticVersionBuilder AppendBuildMetadata([InstantHandle] IEnumerable<string> identifiers)
-        {
-            foreach (string identifier in identifiers)
-                AppendBuildMetadata(identifier);
             return this;
         }
 
