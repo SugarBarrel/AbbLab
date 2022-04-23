@@ -71,13 +71,7 @@ namespace AbbLab.SemanticVersioning
             if (buildMetadata is not null)
             {
                 _buildMetadata = new List<string>(buildMetadata);
-                _buildMetadata.ForEach(static identifier =>
-                {
-                    if (identifier.Length is 0)
-                        throw new ArgumentException(Exceptions.BuildMetadataEmpty, nameof(buildMetadata));
-                    if (!Utility.IsValidIdentifier(identifier))
-                        throw new ArgumentException(Exceptions.BuildMetadataInvalid, nameof(buildMetadata));
-                });
+                _buildMetadata.ForEach(static identifier => Utility.ValidateBuildMetadata(identifier, nameof(buildMetadata)));
             }
             else _buildMetadata = new List<string>();
         }
@@ -121,19 +115,13 @@ namespace AbbLab.SemanticVersioning
 
         public SemanticVersionBuilder AppendBuildMetadata(string identifier)
         {
-            if (identifier.Length is 0)
-                throw new ArgumentException(Exceptions.BuildMetadataEmpty, nameof(identifier));
-            if (!Utility.IsValidIdentifier(identifier))
-                throw new ArgumentException(Exceptions.BuildMetadataInvalid, nameof(identifier));
+            Utility.ValidateBuildMetadata(identifier, nameof(identifier));
             _buildMetadata.Add(identifier);
             return this;
         }
         public SemanticVersionBuilder AppendBuildMetadata(ReadOnlySpan<char> identifier)
         {
-            if (identifier.Length is 0)
-                throw new ArgumentException(Exceptions.BuildMetadataEmpty, nameof(identifier));
-            if (!Utility.IsValidIdentifier(identifier))
-                throw new ArgumentException(Exceptions.BuildMetadataInvalid, nameof(identifier));
+            Utility.ValidateBuildMetadata(identifier, nameof(identifier));
             _buildMetadata.Add(new string(identifier));
             return this;
         }

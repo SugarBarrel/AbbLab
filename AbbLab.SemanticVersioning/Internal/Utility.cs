@@ -32,6 +32,16 @@ namespace AbbLab.SemanticVersioning
             return true;
         }
 
+        public static void ValidateBuildMetadata(string str, [InvokerParameterName] string parameterName)
+            => ValidateBuildMetadata(str.AsSpan(), parameterName);
+        public static void ValidateBuildMetadata(ReadOnlySpan<char> str, [InvokerParameterName] string parameterName)
+        {
+            if (str.Length is 0)
+                throw new ArgumentException(Exceptions.BuildMetadataEmpty, parameterName);
+            if (!IsValidIdentifier(str))
+                throw new ArgumentException(Exceptions.BuildMetadataInvalid, parameterName);
+        }
+
         [Pure] public static bool TryTrim(string text, out ReadOnlySpan<char> trimmed)
         {
             trimmed = text.AsSpan().Trim();

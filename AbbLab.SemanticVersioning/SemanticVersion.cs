@@ -77,10 +77,7 @@ namespace AbbLab.SemanticVersioning
                 for (int i = 0, length = buildMetadataArray.Length; i < length; i++)
                 {
                     string identifier = buildMetadataArray[i];
-                    if (identifier.Length is 0)
-                        throw new ArgumentException(Exceptions.BuildMetadataEmpty, nameof(buildMetadata));
-                    if (!Utility.IsValidIdentifier(identifier))
-                        throw new ArgumentException(Exceptions.BuildMetadataInvalid, nameof(buildMetadata));
+                    Utility.ValidateBuildMetadata(identifier, nameof(buildMetadata));
                 }
                 _buildMetadata = buildMetadataArray;
             }
