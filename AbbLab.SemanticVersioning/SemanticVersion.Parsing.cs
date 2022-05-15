@@ -210,7 +210,26 @@ namespace AbbLab.SemanticVersioning
                 }
                 else if ((options & SemanticOptions.OptionalPreReleaseSeparator) is not 0 && Utility.IsValidCharacter(text[pos]))
                 {
-                    // TODO: optional pre-release separator
+                    if (allowInnerWhite) SkipWhitespace(text, ref pos, length);
+
+                    List<SemanticPreRelease> list = new List<SemanticPreRelease>();
+                    do
+                    {
+                        bool isNumeric = Utility.IsDigit(text[pos]);
+                        start = pos; // don't skip anything, since it's already on a pre-release character
+                        while (pos < length && (isNumeric ? Utility.IsDigit(text[pos]) : Utility.IsLetter(text[pos]))) pos++;
+                        // no need to check for empty pre-releases, since there's always at least one character
+
+                        SemanticErrorCode code = SemanticPreRelease.ParseValidated(
+                            text[start..pos], allowLeadingZeroes, out SemanticPreRelease preRelease);
+                        if (code is not SemanticErrorCode.Success) return code;
+
+                        if (allowInnerWhite) SkipWhitespace(text, ref pos, length);
+
+                        list.Add(preRelease); // add the read pre-release
+                    }
+                    while (pos < length && Utility.IsValidCharacter(text[pos]));
+                    preReleases = list.ToArray();
                 }
             }
 
