@@ -31,6 +31,8 @@ namespace AbbLab.SemanticVersioning.Tests
             New("1.234.56789").Returns(1, 234, 56789);
             New("12345.678.9").Returns(12345, 678, 9);
 
+            // TODO: version components near 2147483647
+
             // with pre-releases
             New("1.2.3-alpha").Returns(1, 2, 3, "alpha");
             New("1.2.3-456").Returns(1, 2, 3, 456);
@@ -115,13 +117,33 @@ namespace AbbLab.SemanticVersioning.Tests
             New("1.2.3+.test-build..", o).Returns(1, 2, 3, "+test-build");
             New("1.2.3+..007.", o).Returns(1, 2, 3, "+007");
 
-            // TODO: leading/trailing whitespace
-            // TODO: inner whitespace + trailing whitespace
-            // TODO: allow leftovers + trailing whitespace
+            // leading whitespace
+            New(" \r\t\n 1.2.3").Throws(Exceptions.MajorNotFound);
+            o = SemanticOptions.AllowLeadingWhite;
+            New(" \r\t\n 1.2.3", o).Returns(1, 2, 3);
 
+            // trailing whitespace
+            New("1.2.3-pre+build \r\t\n ").Throws(Exceptions.Leftovers);
+            o = SemanticOptions.AllowTrailingWhite;
+            New("1.2.3-pre+build \r\t\n ", o).Returns(1, 2, 3, "pre", "+build");
 
+            // allow leftovers
+            New("1.2.3-gamma+123$$$").Throws(Exceptions.Leftovers);
+            o = SemanticOptions.AllowLeftovers;
+            New("1.2.3-gamma+123$$$", o).Returns(1, 2, 3, "gamma", "+123");
 
+            // inner whitespace
+            New("1 .\r2\t\n. 3\r\t-\nalpha .\r\t0\n+ build").Throws(Exceptions.MinorNotFound);
+            o = SemanticOptions.AllowInnerWhite;
+            New("1 .\r2\t\n. 3\r\t-\nalpha .\r\t0\n+ build", o).Returns(1, 2, 3, "alpha", 0, "+build");
 
+            // inner whitespace + trailing whitespace
+            o = SemanticOptions.AllowInnerWhite;
+            New("1 .2 .3 -beta +007   ", o).Throws(Exceptions.Leftovers);
+            New("1 .2 .3 -beta +007   $$$", o).Throws(Exceptions.Leftovers);
+            o = SemanticOptions.AllowInnerWhite | SemanticOptions.AllowTrailingWhite;
+            New("1 .2 .3 -beta +007   ", o).Returns(1, 2, 3, "beta", "+007");
+            New("1 .2 .3 -beta +007   $$$", o).Throws(Exceptions.Leftovers);
 
 
 
