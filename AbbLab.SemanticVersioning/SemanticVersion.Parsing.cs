@@ -187,9 +187,10 @@ namespace AbbLab.SemanticVersioning
                     List<SemanticPreRelease> list = new List<SemanticPreRelease>();
                     do
                     {
+                        pos++; // skip '-'/'.'
                         if (allowInnerWhite) SkipWhitespace(text, ref pos, length);
+                        start = pos; // set pre-release's beginning
 
-                        start = ++pos; // skip '-'/'.' and set pre-release's beginning
                         while (pos < length && Utility.IsValidCharacter(text[pos])) pos++;
                         if (pos == start)
                         {
@@ -201,9 +202,9 @@ namespace AbbLab.SemanticVersioning
                             text[start..pos], allowLeadingZeroes, out SemanticPreRelease preRelease);
                         if (code is not SemanticErrorCode.Success) return code;
 
-                        if (allowInnerWhite) SkipWhitespace(text, ref pos, length);
-
                         list.Add(preRelease); // add the read pre-release
+
+                        if (allowInnerWhite) SkipWhitespace(text, ref pos, length);
                     }
                     while (pos < length && text[pos] is '.');
                     preReleases = list.ToArray();
@@ -224,9 +225,9 @@ namespace AbbLab.SemanticVersioning
                             text[start..pos], allowLeadingZeroes, out SemanticPreRelease preRelease);
                         if (code is not SemanticErrorCode.Success) return code;
 
-                        if (allowInnerWhite) SkipWhitespace(text, ref pos, length);
-
                         list.Add(preRelease); // add the read pre-release
+
+                        if (allowInnerWhite) SkipWhitespace(text, ref pos, length);
                     }
                     while (pos < length && Utility.IsValidCharacter(text[pos]));
                     preReleases = list.ToArray();
@@ -240,9 +241,10 @@ namespace AbbLab.SemanticVersioning
                 List<string> list = new List<string>();
                 do
                 {
+                    pos++; // skip '+'/'.'
                     if (allowInnerWhite) SkipWhitespace(text, ref pos, length);
+                    start = pos; // set the beginning of a build metadata identifier
 
-                    start = ++pos; // skip '+'/'.' and set the beginning of a build metadata identifier
                     while (pos < length && Utility.IsValidCharacter(text[pos])) pos++;
                     if (pos == start)
                     {
@@ -250,9 +252,9 @@ namespace AbbLab.SemanticVersioning
                         return SemanticErrorCode.BuildMetadataNotFound;
                     }
 
-                    if (allowInnerWhite) SkipWhitespace(text, ref pos, length);
-
                     list.Add(new string(text[start..pos])); // add the read build metadata identifier
+
+                    if (allowInnerWhite) SkipWhitespace(text, ref pos, length);
                 }
                 while (pos < length && text[pos] is '.');
                 buildMetadata = list.ToArray();
