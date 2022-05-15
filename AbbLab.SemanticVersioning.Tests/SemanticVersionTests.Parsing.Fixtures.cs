@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace AbbLab.SemanticVersioning.Tests
 {
-    public partial class SemanticVersionParsing
+    public partial class SemanticVersionTests
     {
-        public static IEnumerable<object?[]> EnumerateFixtures()
+        public static IEnumerable<object?[]> EnumerateParseFixtures()
         {
             List<ParseFixture> fixtures = new List<ParseFixture>();
             ParseFixture New(string input, SemanticOptions options = SemanticOptions.Strict)
@@ -42,10 +42,10 @@ namespace AbbLab.SemanticVersioning.Tests
 
             // with build metadata
             New("1.2.3+test-build").Returns(1, 2, 3, "+test-build");
-            New("1.2.3+045.test").Returns(1, 2, 3, "045", "test");
-            New("1.2.3+-045.test").Returns(1, 2, 3, "-045", "test");
+            New("1.2.3+045.test").Returns(1, 2, 3, "+045", "test");
+            New("1.2.3+-045.test").Returns(1, 2, 3, "+-045", "test");
             // with pre-releases and build metadata
-            New("1.2.3-alpha.7+build.008").Returns(1, 2, 3, "alpha", 7, "build", "008");
+            New("1.2.3-alpha.7+build.008").Returns(1, 2, 3, "alpha", 7, "+build", "008");
 
             // leading zeroes
             SemanticOptions o = SemanticOptions.AllowLeadingZeroes;

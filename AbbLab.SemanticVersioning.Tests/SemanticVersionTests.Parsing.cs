@@ -8,44 +8,49 @@ using Xunit.Abstractions;
 
 namespace AbbLab.SemanticVersioning.Tests
 {
-    public partial class SemanticVersionParsing
+    public partial class SemanticVersionTests
     {
         private readonly ITestOutputHelper Output;
-        public SemanticVersionParsing(ITestOutputHelper output) => Output = output;
+        public SemanticVersionTests(ITestOutputHelper output) => Output = output;
 
-        [Theory, MemberData(nameof(EnumerateFixtures))]
-        public void Test(ParseFixture fixture)
+        [Theory, MemberData(nameof(EnumerateParseFixtures))]
+        public void ParsingTests(ParseFixture fixture)
         {
-            Output.WriteLine($"`{fixture.Input}`");
-            Output.WriteLine($"using {fixture.Options}");
+            string input = fixture.Input;
+            SemanticOptions options = fixture.Options;
+            Output.WriteLine($"`{input}`");
+            Output.WriteLine($"using {options}");
 
             AssertEx.Identical(new Func<SemanticVersion>[]
             {
-                () => SemanticVersion.Parse(fixture.Input, fixture.Options),
-                () => SemanticVersion.Parse(fixture.Input.AsSpan(), fixture.Options),
+                () => SemanticVersion.Parse(input, options),
+                () => SemanticVersion.Parse(input.AsSpan(), options),
             }, fixture.Assert);
             AssertEx.Identical(new AssertEx.TryParse<SemanticVersion>[]
             {
-                (out SemanticVersion? res) => SemanticVersion.TryParse(fixture.Input, fixture.Options, out res),
-                (out SemanticVersion? res) => SemanticVersion.TryParse(fixture.Input.AsSpan(), fixture.Options, out res),
+                (out SemanticVersion? res) => SemanticVersion.TryParse(input, options, out res),
+                (out SemanticVersion? res) => SemanticVersion.TryParse(input.AsSpan(), options, out res),
+                (out SemanticVersion? res) => SemanticVersion.TryParse(input, options, out _, out res),
+                (out SemanticVersion? res) => SemanticVersion.TryParse(input.AsSpan(), options, out _, out res),
             }, fixture.Assert);
 
             if (fixture.Options is SemanticOptions.Strict) // test strict overloads and loose parsing with strict options
             {
                 AssertEx.Identical(new Func<SemanticVersion>[]
                 {
-                    () => SemanticVersion.Parse(fixture.Input),
-                    () => SemanticVersion.Parse(fixture.Input.AsSpan()),
-                    () => SemanticVersion.Parse(fixture.Input, TestUtil.PseudoStrict),
-                    () => SemanticVersion.Parse(fixture.Input.AsSpan(), TestUtil.PseudoStrict),
+                    () => SemanticVersion.Parse(input),
+                    () => SemanticVersion.Parse(input.AsSpan()),
+                    () => SemanticVersion.Parse(input, TestUtil.PseudoStrict),
+                    () => SemanticVersion.Parse(input.AsSpan(), TestUtil.PseudoStrict),
                 }, fixture.Assert);
-
                 AssertEx.Identical(new AssertEx.TryParse<SemanticVersion>[]
                 {
-                    (out SemanticVersion? res) => SemanticVersion.TryParse(fixture.Input, out res),
-                    (out SemanticVersion? res) => SemanticVersion.TryParse(fixture.Input.AsSpan(), out res),
-                    (out SemanticVersion? res) => SemanticVersion.TryParse(fixture.Input, TestUtil.PseudoStrict, out res),
-                    (out SemanticVersion? res) => SemanticVersion.TryParse(fixture.Input.AsSpan(), TestUtil.PseudoStrict, out res),
+                    (out SemanticVersion? res) => SemanticVersion.TryParse(input, out res),
+                    (out SemanticVersion? res) => SemanticVersion.TryParse(input.AsSpan(), out res),
+                    (out SemanticVersion? res) => SemanticVersion.TryParse(input, TestUtil.PseudoStrict, out res),
+                    (out SemanticVersion? res) => SemanticVersion.TryParse(input.AsSpan(), TestUtil.PseudoStrict, out res),
+                    (out SemanticVersion? res) => SemanticVersion.TryParse(input, TestUtil.PseudoStrict, out _, out res),
+                    (out SemanticVersion? res) => SemanticVersion.TryParse(input.AsSpan(), TestUtil.PseudoStrict, out _, out res),
                 }, fixture.Assert);
             }
 
@@ -53,15 +58,24 @@ namespace AbbLab.SemanticVersioning.Tests
             {
                 AssertEx.Identical(new Func<SemanticVersion>[]
                 {
-                    () => SemanticVersion.Parse(fixture.Input, SemanticOptions.Loose),
-                    () => SemanticVersion.Parse(fixture.Input.AsSpan(), SemanticOptions.Loose),
+                    () => SemanticVersion.Parse(input, SemanticOptions.Loose),
+                    () => SemanticVersion.Parse(input.AsSpan(), SemanticOptions.Loose),
                 }, fixture.Assert);
-
                 AssertEx.Identical(new AssertEx.TryParse<SemanticVersion>[]
                 {
-                    (out SemanticVersion? res) => SemanticVersion.TryParse(fixture.Input, SemanticOptions.Loose, out res),
-                    (out SemanticVersion? res) => SemanticVersion.TryParse(fixture.Input.AsSpan(), SemanticOptions.Loose, out res),
+                    (out SemanticVersion? res) => SemanticVersion.TryParse(input, SemanticOptions.Loose, out res),
+                    (out SemanticVersion? res) => SemanticVersion.TryParse(input.AsSpan(), SemanticOptions.Loose, out res),
+                    (out SemanticVersion? res) => SemanticVersion.TryParse(input, SemanticOptions.Loose, out _, out res),
+                    (out SemanticVersion? res) => SemanticVersion.TryParse(input.AsSpan(), SemanticOptions.Loose, out _, out res),
                 }, fixture.Assert);
+            }
+
+            if (fixture.ErrorPosition is not null)
+            {
+                SemanticVersion.TryParse(input, options, out int lastPosition, out _);
+                SemanticVersion.TryParse(input.AsSpan(), options, out int lastPosition2, out _);
+                Assert.Equal(fixture.ErrorPosition.Value, lastPosition);
+                Assert.Equal(fixture.ErrorPosition.Value, lastPosition2);
             }
         }
 
@@ -117,15 +131,15 @@ namespace AbbLab.SemanticVersioning.Tests
                 ErrorType = typeof(TException);
                 ErrorMessage = message;
 
-                int index = Input.IndexOf('<'); // Syntax: "1.2.3-pre<$>.beta"
-                if (index is -1 || Input.IndexOf('>', index) != index + 2) return this;
+                int index = Input.IndexOf('{'); // Syntax: "1.2.3-pre<$>.beta"
+                if (index is -1 || Input.IndexOf('}', index) != index + 2) return this;
                 ErrorPosition = index;
                 Input = Input[..index] + Input[index + 1] + Input[(index + 3)..];
 
                 return this;
             }
 
-            public void Assert(SemanticVersion? version)
+            public void Assert(SemanticVersion? version, Exception? exception)
             {
                 if (IsValid)
                 {
@@ -138,8 +152,9 @@ namespace AbbLab.SemanticVersioning.Tests
                 }
                 else
                 {
-                    Xunit.Assert.Null(version);
-                    throw (Exception)ErrorType!.GetConstructor(new Type[1] { typeof(string) })!.Invoke(new object?[] { ErrorMessage });
+                    Xunit.Assert.NotNull(exception);
+                    Xunit.Assert.Equal(ErrorType, exception!.GetType());
+                    Xunit.Assert.StartsWith(ErrorMessage!, exception.Message);
                 }
             }
 
@@ -151,6 +166,7 @@ namespace AbbLab.SemanticVersioning.Tests
                     sb.Append(", ").Append(Options);
                 return sb.ToString();
             }
+
         }
     }
 }

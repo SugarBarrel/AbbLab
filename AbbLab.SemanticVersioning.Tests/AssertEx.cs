@@ -6,18 +6,6 @@ namespace AbbLab.SemanticVersioning.Tests
 {
     internal static class AssertEx
     {
-        private static void CatchException([InstantHandle] Action action, out Exception? exception)
-        {
-            try
-            {
-                action();
-                exception = null;
-            }
-            catch (Exception? caught)
-            {
-                exception = caught;
-            }
-        }
         private static T? CatchException<T>([InstantHandle] Func<T?> action, out Exception? exception)
         {
             try
@@ -33,38 +21,25 @@ namespace AbbLab.SemanticVersioning.Tests
             }
         }
 
-        public static void Identical<T>(Func<T?>[] actions, Action<T?> assert)
+        public static void Identical<T>(Func<T>[] functions, Action<T?, Exception?> assert)
         {
-            Exception? exception = null;
-            CatchException(() => assert(CatchException(actions[0], out exception)), out Exception? assertException);
-
-            for (int i = 1, length = actions.Length; i < length; i++)
+            for (int i = 0, length = functions.Length; i < length; i++)
             {
-                Exception? subsequent = null;
-                CatchException(() => assert(CatchException(actions[i], out subsequent)), out Exception? subsequentAssertException);
-
-                Assert.Equal(exception?.GetType(), subsequent?.GetType());
-                Assert.Equal(exception?.Message, subsequent?.Message);
-                Assert.Equal(assertException?.GetType(), subsequentAssertException?.GetType());
-                Assert.Equal(assertException?.Message, subsequentAssertException?.Message);
+                T? value = CatchException(functions[i], out Exception? exception);
+                assert(value, exception);
             }
         }
-        public static void Identical(Action[] actions, Action thrower)
+        public static void Identical<T>(TryParse<T>[] tryFunctions, Action<T?, Exception?> assert)
         {
-            CatchException(thrower, out Exception? exception);
-
-            for (int i = 1, length = actions.Length; i < length; i++)
+            for (int i = 0, length = tryFunctions.Length; i < length; i++)
             {
-                CatchException(actions[i], out Exception? subsequent);
-
-                Assert.Equal(exception?.GetType(), subsequent?.GetType());
-                Assert.Equal(exception?.Message, subsequent?.Message);
+                bool res = tryFunctions[i](out T? value);
+                Assert.Equal(res, value is not null);
+                if (res) assert(value, null);
             }
         }
 
-        public delegate bool TryParse<T>(out T? result);
-        public static void Identical<T>(TryParse<T>[] actions, Action<T?> assert)
-            => Identical(Array.ConvertAll(actions, static a => (Func<T?>)(() => a(out T? res) ? res : default)), assert);
+        public delegate bool TryParse<T>(out T? value);
 
     }
 }
