@@ -60,7 +60,7 @@ namespace AbbLab.SemanticVersioning
             return result;
         }
 
-        [Pure] private static int CountDigits(int number) => number switch
+        [Pure] public static int CountDigits(int number) => number switch
         {
             < 10 => 1,
             < 100 => 2,
@@ -86,6 +86,18 @@ namespace AbbLab.SemanticVersioning
 
         [Pure] public static string SimpleToString(int number)
             => string.Create(CountDigits(number), number, FillNumberDelegate);
+        [Pure] public static bool SimpleTryFormat(int number, Span<char> span, out int charsWritten)
+        {
+            int digits = CountDigits(number);
+            if (digits > span.Length)
+            {
+                charsWritten = 0;
+                return false;
+            }
+            charsWritten = digits;
+            FillNumber(span[..digits], number);
+            return true;
+        }
 
     }
 }

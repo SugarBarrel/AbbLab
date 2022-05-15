@@ -4,6 +4,11 @@ using JetBrains.Annotations;
 namespace AbbLab.SemanticVersioning
 {
     public readonly partial struct SemanticPreRelease : IEquatable<SemanticPreRelease>, IComparable, IComparable<SemanticPreRelease>
+#if NET6_0_OR_GREATER
+                                                      , ISpanFormattable
+#else
+                                                      , IFormattable
+#endif
     {
         private readonly string? text;
         private readonly int number;
@@ -56,6 +61,27 @@ namespace AbbLab.SemanticVersioning
         [Pure] public static bool operator <(SemanticPreRelease a, SemanticPreRelease b) => a.CompareTo(b) < 0;
         [Pure] public static bool operator >=(SemanticPreRelease a, SemanticPreRelease b) => a.CompareTo(b) >= 0;
         [Pure] public static bool operator <=(SemanticPreRelease a, SemanticPreRelease b) => a.CompareTo(b) <= 0;
+
+        public override string ToString() => text ?? Utility.SimpleToString(number);
+        string IFormattable.ToString(string? _, IFormatProvider? __)
+            => ToString();
+
+        public bool TryFormat(Span<char> span, out int charsWritten)
+        {
+            if (text is null) return Utility.SimpleTryFormat(number, span, out charsWritten);
+
+#if NET6_0_OR_GREATER
+            bool res = text.TryCopyTo(span);
+#else
+            bool res = text.AsSpan().TryCopyTo(span);
+#endif
+            charsWritten = res ? text.Length : 0;
+            return res;
+        }
+#if NET6_0_OR_GREATER
+        bool ISpanFormattable.TryFormat(Span<char> span, out int charsWritten, ReadOnlySpan<char> _, IFormatProvider? __)
+            => TryFormat(span, out charsWritten);
+#endif
 
     }
 }
