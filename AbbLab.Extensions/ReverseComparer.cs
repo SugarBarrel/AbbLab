@@ -32,8 +32,8 @@ namespace AbbLab.Extensions
 
         public static ReverseComparer<T?> Default { get; } = new ReverseComparer<T?>(Comparer<T?>.Default);
 
-        [Pure] public static ReverseComparer<T?> Create(Func<T?, T?, int> comparison)
-            => new ReverseComparer<T?>(Comparer<T?>.Create(comparison.Invoke));
+        [Pure] public static ReverseComparer<T?> Create(Comparison<T?> comparison)
+            => new ReverseComparer<T?>(Comparer<T?>.Create(comparison));
 
     }
 }
