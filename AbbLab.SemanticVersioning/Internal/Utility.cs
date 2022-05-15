@@ -53,9 +53,10 @@ namespace AbbLab.SemanticVersioning
             int result = text[0] - '0';
             for (int i = 1, length = text.Length; i < length; i++)
             {
+                if ((uint)result > 0x7FFFFFFFu / 10u) return -1; // multiplying by 10 would cause overflow
                 result = result * 10 + (text[i] - '0');
-                if (result < 0) return -1; // TODO: this check is not reliable at all
             }
+            if (result < 0) return -1; // last addition caused overflow
             return result;
         }
 
@@ -83,7 +84,6 @@ namespace AbbLab.SemanticVersioning
         }
         private static readonly SpanAction<char, int> FillNumberDelegate = FillNumber;
 
-        // TODO: benchmark against the method with stackalloc[16]
         [Pure] public static string SimpleToString(int number)
             => string.Create(CountDigits(number), number, FillNumberDelegate);
 
