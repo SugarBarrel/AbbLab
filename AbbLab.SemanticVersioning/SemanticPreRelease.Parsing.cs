@@ -52,7 +52,7 @@ namespace AbbLab.SemanticVersioning
             result = -1;
             return SemanticErrorCode.Success;
         }
-        internal static SemanticErrorCode ParseValidated(ReadOnlySpan<char> text, bool allowLeadingZeroes, out SemanticPreRelease preRelease)
+        [Pure] internal static SemanticErrorCode ParseValidated(ReadOnlySpan<char> text, bool allowLeadingZeroes, out SemanticPreRelease preRelease)
         {
             if (Utility.IsNumeric(text))
             {

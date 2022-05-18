@@ -62,11 +62,11 @@ namespace AbbLab.SemanticVersioning
         [Pure] public static bool operator >=(SemanticPreRelease a, SemanticPreRelease b) => a.CompareTo(b) >= 0;
         [Pure] public static bool operator <=(SemanticPreRelease a, SemanticPreRelease b) => a.CompareTo(b) <= 0;
 
-        public override string ToString() => text ?? Utility.SimpleToString(number);
-        string IFormattable.ToString(string? _, IFormatProvider? __)
+        [Pure] public override string ToString() => text ?? Utility.SimpleToString(number);
+        [Pure] string IFormattable.ToString(string? _, IFormatProvider? __)
             => ToString();
 
-        public bool TryFormat(Span<char> span, out int charsWritten)
+        [Pure] public bool TryFormat(Span<char> span, out int charsWritten)
         {
             if (text is null) return Utility.SimpleTryFormat(number, span, out charsWritten);
 
@@ -79,7 +79,7 @@ namespace AbbLab.SemanticVersioning
             return res;
         }
 #if NET6_0_OR_GREATER
-        bool ISpanFormattable.TryFormat(Span<char> span, out int charsWritten, ReadOnlySpan<char> _, IFormatProvider? __)
+        [Pure] bool ISpanFormattable.TryFormat(Span<char> span, out int charsWritten, ReadOnlySpan<char> _, IFormatProvider? __)
             => TryFormat(span, out charsWritten);
 #endif
 
