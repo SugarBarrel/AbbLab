@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace AbbLab.Extensions
@@ -211,6 +212,15 @@ namespace AbbLab.Extensions
                 if (set.Add(result)) yield return item;
             }
         }
+
+        /// <summary>
+        ///   <para>Returns non-null elements from a sequence.</para>
+        /// </summary>
+        /// <typeparam name="T">The type of the objects to enumerate.</typeparam>
+        /// <param name="source">The sequence to remove null elements from.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> that contains non-null elements from the source sequence.</returns>
+        [Pure, LinqTunnel] public static IEnumerable<T> NotNull<T>(this IEnumerable<T?> source)
+            => (default(T) != null ? source : source.Where(static el => el != null))!;
 
     }
 }
