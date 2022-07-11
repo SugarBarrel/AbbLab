@@ -31,7 +31,14 @@ namespace AbbLab.SemanticVersioning.Tests
             New("1.234.56789").Returns(1, 234, 56789);
             New("12345.678.9").Returns(12345, 678, 9);
 
-            // TODO: version components near 2147483647
+            // big numbers
+            New("2147483647.2.3").Returns(2147483647, 2, 3);
+            New("2147483648.2.3").Throws(Exceptions.MajorTooBig);
+            New("1.2147483647.3").Returns(1, 2147483647, 3);
+            New("1.2147483648.3").Throws(Exceptions.MinorTooBig);
+            New("1.2.2147483647").Returns(1, 2, 2147483647);
+            New("1.2.2147483648").Throws(Exceptions.PatchTooBig);
+            New("2147483647.2147483647.2147483647").Returns(2147483647, 2147483647, 2147483647);
 
             // with pre-releases
             New("1.2.3-alpha").Returns(1, 2, 3, "alpha");
