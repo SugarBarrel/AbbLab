@@ -7,7 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbbLab.Extensions", "AbbLab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbbLab.SemanticVersioning", "AbbLab.SemanticVersioning\AbbLab.SemanticVersioning.csproj", "{162163E6-EF75-4AFF-9F72-699B862500E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbbLab.SemanticVersioning.Tests", "AbbLab.SemanticVersioning.Tests\AbbLab.SemanticVersioning.Tests.csproj", "{EB08439F-D144-41ED-9978-9C2CED34DDCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbbLab.SemanticVersioning.Tests", "AbbLab.SemanticVersioning.Tests\AbbLab.SemanticVersioning.Tests.csproj", "{EB08439F-D144-41ED-9978-9C2CED34DDCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbbLab.Serialization", "AbbLab.Serialization\AbbLab.Serialization.csproj", "{2AA48A11-CD15-4096-8610-7435C0172F2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbbLab.Serialization.Tests", "AbbLab.Serialization.Tests\AbbLab.Serialization.Tests.csproj", "{69628609-CBFF-473B-906E-9FA44FFDEEFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{EB08439F-D144-41ED-9978-9C2CED34DDCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB08439F-D144-41ED-9978-9C2CED34DDCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB08439F-D144-41ED-9978-9C2CED34DDCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AA48A11-CD15-4096-8610-7435C0172F2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AA48A11-CD15-4096-8610-7435C0172F2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AA48A11-CD15-4096-8610-7435C0172F2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AA48A11-CD15-4096-8610-7435C0172F2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69628609-CBFF-473B-906E-9FA44FFDEEFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69628609-CBFF-473B-906E-9FA44FFDEEFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69628609-CBFF-473B-906E-9FA44FFDEEFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69628609-CBFF-473B-906E-9FA44FFDEEFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
