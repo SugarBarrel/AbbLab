@@ -100,6 +100,11 @@ namespace AbbLab.SemanticVersioning
         public static explicit operator Version?(SemanticVersion? version)
             => version is null ? null : new Version(version.Major, version.Minor, version.Patch);
 
+        public static readonly SemanticVersion MinValue
+            = new SemanticVersion(0, 0, 0, new SemanticPreRelease[1] { SemanticPreRelease.Zero });
+        public static readonly SemanticVersion MaxValue
+            = new SemanticVersion(int.MaxValue, int.MaxValue, int.MaxValue);
+
         [Pure] public bool Equals(SemanticVersion? other)
         {
             if (other is null || Major != other.Major || Minor != other.Minor || Patch != other.Patch) return false;
