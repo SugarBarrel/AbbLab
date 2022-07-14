@@ -60,6 +60,20 @@ namespace AbbLab.SemanticVersioning
             if (result < 0) return -1; // last addition caused overflow
             return result;
         }
+        [Pure] public static int SimpleParsePartial(ReadOnlySpan<char> text, out int result)
+        {
+            result = text[0] - '0';
+            int i = 1, length = text.Length;
+            for (; i < length; i++)
+            {
+                char digit = text[i];
+                if (digit is < '0' or > '9') return i;
+                if ((uint)result > 0x7FFFFFFFu / 10u) return 0; // multiplying by 10 would cause overflow
+                result = result * 10 + (digit - '0');
+            }
+            if (result < 0) return 0; // last addition caused overflow
+            return i;
+        }
 
         [Pure] public static int CountDigits(int number) => number switch
         {

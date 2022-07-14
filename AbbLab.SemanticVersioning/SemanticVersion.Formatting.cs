@@ -71,6 +71,9 @@ namespace AbbLab.SemanticVersioning
             char quote = default;
             int quoteStart = 0;
 
+            int preReleaseFormatIndex = 0;
+            int buildMetadataFormatIndex = 0;
+
             while (pos < length)
             {
                 if (quote != default)
@@ -152,44 +155,78 @@ namespace AbbLab.SemanticVersioning
                         break;
                     case 'r':
                         next = pos + 1;
-                        if (next < length && format[next] is 'r') // 'rr' - include all pre-releases
+                        if (next < length && format[next] is 'r') // 'rr' - include the rest (or all) pre-releases
                         {
                             pos = next; // consume extra character
                             int preReleasesLength = _preReleases.Length;
-                            if (preReleasesLength > 0)
+                            if (preReleasesLength > preReleaseFormatIndex)
                             {
                                 FlushSeparator(sb, ref separator);
-                                sb.SimpleAppend(_preReleases[0]);
-                                for (int i = 1; i < preReleasesLength; i++)
-                                    sb.Append('.').SimpleAppend(_preReleases[i]);
+                                sb.SimpleAppend(_preReleases[preReleaseFormatIndex]);
+                                for (preReleaseFormatIndex++; preReleaseFormatIndex < preReleasesLength; preReleaseFormatIndex++)
+                                    sb.Append('.').SimpleAppend(_preReleases[preReleaseFormatIndex]);
                             }
                             else separator = default;
                         }
-                        else // 'r' - indexed
+                        else if (next < length && format[next] is >= '0' and < '9') // 'r123' - indexed pre-release
                         {
-                            throw new NotImplementedException();
-                            // TODO: read a number after 'r' (if not specified, use 0, 1, 2 and so on)
+                            int indexLength = Utility.SimpleParsePartial(format[next..], out int index);
+                            if (indexLength is 0) throw new FormatException("Pre-release index is too big.");
+                            pos += indexLength;
+                            if (index < _preReleases.Length)
+                            {
+                                FlushSeparator(sb, ref separator);
+                                sb.SimpleAppend(_preReleases[index]);
+                            }
+                            else separator = default;
+                            preReleaseFormatIndex = index + 1; // set the next index
+                        }
+                        else // 'r' - the next pre-release
+                        {
+                            if (preReleaseFormatIndex < _preReleases.Length)
+                            {
+                                FlushSeparator(sb, ref separator);
+                                sb.SimpleAppend(_preReleases[preReleaseFormatIndex++]);
+                            }
+                            else separator = default;
                         }
                         break;
                     case 'd':
                         next = pos + 1;
-                        if (next < length && format[next] is 'd') // 'dd' - include all metadata
+                        if (next < length && format[next] is 'd') // 'dd' - include the rest (or all) metadata
                         {
                             pos = next; // consume extra character
                             int buildMetadataLength = _buildMetadata.Length;
-                            if (buildMetadataLength > 0)
+                            if (buildMetadataLength > buildMetadataFormatIndex)
                             {
                                 FlushSeparator(sb, ref separator);
-                                sb.Append(_buildMetadata[0]);
-                                for (int i = 1; i < buildMetadataLength; i++)
-                                    sb.Append('.').Append(_buildMetadata[i]);
+                                sb.Append(_buildMetadata[buildMetadataFormatIndex]);
+                                for (buildMetadataFormatIndex++; buildMetadataFormatIndex < buildMetadataLength; buildMetadataFormatIndex++)
+                                    sb.Append('.').Append(_buildMetadata[buildMetadataFormatIndex]);
                             }
                             else separator = default;
                         }
-                        else // 'd' - indexed
+                        else if (next < length && format[next] is >= '0' and < '9') // 'd123' - indexed build metadata
                         {
-                            throw new NotImplementedException();
-                            // TODO: read a number after 'd' (if not specified, use 0, 1, 2 and so on)
+                            int indexLength = Utility.SimpleParsePartial(format[next..], out int index);
+                            if (indexLength is 0) throw new FormatException("Build metadata index is too big.");
+                            pos += indexLength;
+                            if (index < _buildMetadata.Length)
+                            {
+                                FlushSeparator(sb, ref separator);
+                                sb.Append(_buildMetadata[index]);
+                            }
+                            else separator = default;
+                            buildMetadataFormatIndex = index + 1; // set the next index
+                        }
+                        else // 'd' - the next build metadata
+                        {
+                            if (buildMetadataFormatIndex < _buildMetadata.Length)
+                            {
+                                FlushSeparator(sb, ref separator);
+                                sb.Append(_buildMetadata[buildMetadataFormatIndex++]);
+                            }
+                            else separator = default;
                         }
                         break;
                     default:
