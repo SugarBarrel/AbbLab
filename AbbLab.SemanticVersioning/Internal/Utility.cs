@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace AbbLab.SemanticVersioning
@@ -98,6 +99,20 @@ namespace AbbLab.SemanticVersioning
             FillNumber(span[..digits], number);
             return true;
         }
-
+        public static StringBuilder SimpleAppend(this StringBuilder sb, int number)
+        {
+            int digits = CountDigits(number);
+            // ReSharper disable once ArrangeRedundantParentheses
+            Span<char> buffer = (stackalloc char[16])[..digits];
+            for (int i = digits - 1; i >= 0; i--)
+            {
+                int div = number / 10;
+                buffer[i] = (char)('0' + (number - div * 10));
+                number = div;
+            }
+            return sb.Append(buffer);
+        }
+        public static StringBuilder SimpleAppend(this StringBuilder sb, SemanticPreRelease preRelease)
+            => preRelease.IsNumeric ? sb.SimpleAppend(preRelease.Number) : sb.Append(preRelease.Text);
     }
 }
