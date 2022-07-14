@@ -33,6 +33,16 @@ namespace AbbLab.Extensions
             return false;
         }
 
+        [Pure] public static bool TrueForAll<T>(this T[] array, [InstantHandle] Predicate<T> predicate)
+            => Array.TrueForAll(array, predicate);
+        [Pure] public static bool TrueForAll<T>(this T[] array, [InstantHandle] Func<T, int, bool> predicate)
+        {
+            for (int i = 0, length = array.Length; i < length; i++)
+                if (!predicate(array[i], i))
+                    return false;
+            return true;
+        }
+
         [Pure] public static T? Find<T>(this T[] array, [InstantHandle] Predicate<T> predicate)
             => Array.Find(array, predicate);
         [Pure] public static T? Find<T>(this T[] array, [InstantHandle] Func<T, int, bool> predicate)
@@ -96,6 +106,16 @@ namespace AbbLab.Extensions
                 results[i] = converter(array[i], i);
             return results;
         }
+
+        public static void Clear<T>(this T[] array)
+            => Array.Clear(array, 0, array.Length);
+        public static void Clear<T>(this T[] array, int startIndex, int count)
+            => Array.Clear(array, startIndex, count);
+
+        public static void Fill<T>(this T[] array, T value)
+            => Array.Fill(array, value);
+        public static void Fill<T>(this T[] array, T value, int startIndex, int count)
+            => Array.Fill(array, value, startIndex, count);
 
         public static void Reverse<T>(this T[] array)
             => Array.Reverse(array);
