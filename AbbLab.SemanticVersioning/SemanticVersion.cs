@@ -152,16 +152,13 @@ namespace AbbLab.SemanticVersioning
             if (thisLength is 0 && otherLength > 0) return 1;
             if (thisLength > 0 && otherLength is 0) return -1;
 
-            int maxLength = Math.Max(thisLength, otherLength);
-            for (int i = 0; i < maxLength; i++)
+            for (int i = 0; ; i++)
             {
                 if (i == thisLength) return i == otherLength ? 0 : -1;
                 if (i == otherLength) return 1;
                 res = _preReleases[i].CompareTo(other._preReleases[i]);
                 if (res is not 0) return res;
             }
-
-            return 0;
         }
         [Pure] int IComparable.CompareTo(object? obj)
         {
