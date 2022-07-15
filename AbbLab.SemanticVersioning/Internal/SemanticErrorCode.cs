@@ -16,6 +16,7 @@ namespace AbbLab.SemanticVersioning
         PATCH           = 0b_0000_0011,
         PRERELEASE      = 0b_0000_0100,
         BUILD_METADATA  = 0b_0000_0101,
+        COMPONENT       = 0b_0000_0110,
 
         NatureMask         = 0b_1111_0000,
 
@@ -36,17 +37,20 @@ namespace AbbLab.SemanticVersioning
         MinorTooBig      = MINOR      | TOO_BIG,
         PatchTooBig      = PATCH      | TOO_BIG,
         PreReleaseTooBig = PRERELEASE | TOO_BIG,
+        ComponentTooBig  = COMPONENT  | TOO_BIG,
 
         MajorLeadingZeroes      = MAJOR      | LEADING_ZEROES,
         MinorLeadingZeroes      = MINOR      | LEADING_ZEROES,
         PatchLeadingZeroes      = PATCH      | LEADING_ZEROES,
         PreReleaseLeadingZeroes = PRERELEASE | LEADING_ZEROES,
+        ComponentLeadingZeroes  = COMPONENT  | LEADING_ZEROES,
 
         PreReleaseEmpty    = PRERELEASE     | EMPTY,
         BuildMetadataEmpty = BUILD_METADATA | EMPTY,
 
         PreReleaseInvalid    = PRERELEASE     | INVALID,
         BuildMetadataInvalid = BUILD_METADATA | INVALID,
+        ComponentInvalid     = COMPONENT      | INVALID,
 
     }
 }
