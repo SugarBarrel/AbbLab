@@ -4,23 +4,36 @@ namespace AbbLab.SemanticVersioning
 {
     public sealed class PrimitiveComparator : Comparator
     {
-        private PrimitiveComparator(SemanticVersion operand, PrimitiveOperator type)
+        private PrimitiveComparator(SemanticVersion operand, PrimitiveOperator @operator)
         {
             Operand = operand;
-            Type = type;
+            Operator = @operator;
         }
 
         public SemanticVersion Operand { get; }
-        public PrimitiveOperator Type { get; }
+        public PrimitiveOperator Operator { get; }
         public override bool IsPrimitive => true;
 
-        public override bool Satisfies(SemanticVersion version) => Type switch
+        public override bool Satisfies(SemanticVersion version) => Operator switch
         {
             PrimitiveOperator.GreaterThan => version > Operand,
             PrimitiveOperator.GreaterThanOrEqual => version >= Operand,
             PrimitiveOperator.LessThan => version < Operand,
             PrimitiveOperator.LessThanOrEqual => version <= Operand,
             PrimitiveOperator.Equal => version == Operand,
+            _ => throw new NotImplementedException(),
+        };
+
+        protected internal override VersionRange Negate() => Operator switch
+        {
+            PrimitiveOperator.GreaterThan => new PrimitiveComparator(Operand, PrimitiveOperator.LessThanOrEqual),
+            PrimitiveOperator.GreaterThanOrEqual => new PrimitiveComparator(Operand, PrimitiveOperator.LessThan),
+            PrimitiveOperator.LessThan => new PrimitiveComparator(Operand, PrimitiveOperator.GreaterThanOrEqual),
+            PrimitiveOperator.LessThanOrEqual => new PrimitiveComparator(Operand, PrimitiveOperator.GreaterThan),
+            PrimitiveOperator.Equal => new VersionRange(
+                new PrimitiveComparator(Operand, PrimitiveOperator.LessThan),
+                new PrimitiveComparator(Operand, PrimitiveOperator.GreaterThan)
+            ),
             _ => throw new NotImplementedException(),
         };
 

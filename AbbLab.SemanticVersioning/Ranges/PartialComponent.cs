@@ -19,7 +19,12 @@ namespace AbbLab.SemanticVersioning
             if (value < 0) throw new ArgumentOutOfRangeException(nameof(value), value, Exceptions.ComponentNegative);
             _value = value;
         }
-        public PartialComponent(char character) => this = Parse(character);
+        public PartialComponent(char wildcard) => this = Parse(wildcard);
+
+        public static implicit operator PartialComponent(int value) => new PartialComponent(value);
+        public static implicit operator PartialComponent(char wildcard) => new PartialComponent(wildcard);
+        public static explicit operator int(PartialComponent component) => component.Number;
+        public static explicit operator char(PartialComponent component) => component.Wildcard;
 
         public static readonly PartialComponent Zero = new PartialComponent(0);
         public static readonly PartialComponent LowercaseX = new PartialComponent('x');
@@ -30,6 +35,8 @@ namespace AbbLab.SemanticVersioning
         public bool IsWildcard => _value < 0;
         public int Number => _value >= 0 ? _value : throw new InvalidOperationException(Exceptions.ComponentNotNumeric);
         public char Wildcard => _value < 0 ? (char)-_value : throw new InvalidOperationException(Exceptions.ComponentNotWildcard);
+
+        public int GetValueOrZero() => Math.Max(_value, 0);
 
         [Pure] public bool Equals(PartialComponent other)
         {
