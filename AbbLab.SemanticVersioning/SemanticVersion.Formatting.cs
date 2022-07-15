@@ -80,7 +80,7 @@ namespace AbbLab.SemanticVersioning
                 {
                     if (format[pos] == quote)
                     {
-                        sb.Append(format[quoteStart..(pos - quoteStart + 1)]);
+                        sb.Append(format[quoteStart..pos]);
                         quote = default;
                     }
                     pos++;

@@ -46,9 +46,9 @@ namespace AbbLab.SemanticVersioning.Tests
             New("1.0.3-beta", "M.mm.pp-rr").Returns("1.0.3-beta");
 
             // Escaped sequences
-            New("1.2.3-alpha", @"\M.\m.\p-\r\r: M.m.p-rr").Returns(@"M.m.p-rr: 1.2.3-alpha");
-            New("1.2.3-alpha", "'M.m.p-rr': M.m.p-rr").Returns("M.m.p-rr: 1.2.3-alpha");
-            New("1.2.3-alpha", "\"M.m.p-rr\": M.m.p-rr").Returns("M.m.p-rr: 1.2.3-alpha");
+            New("1.2.3-alpha", @"M.m.p-rr \M.\m.\p-\r\r").Returns("1.2.3-alpha M.m.p-rr");
+            New("1.2.3-alpha", "M.m.p-rr 'M.m.p-rr'").Returns("1.2.3-alpha M.m.p-rr");
+            New("1.2.3-alpha", "M.m.p-rr \"M.m.p-rr\"").Returns("1.2.3-alpha M.m.p-rr");
             New("1.2.3-alpha", "'M.m.p-rr: M.m.p-rr").Throws("The format string contains an unclosed quote ('\\'', '\"').");
             New("1.2.3-alpha", "\"M.m.p-rr: M.m.p-rr").Throws("The format string contains an unclosed quote ('\\'', '\"').");
 
