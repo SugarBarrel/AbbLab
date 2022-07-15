@@ -1,0 +1,35 @@
+name: Publish AbbLab.Extensions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  nuget-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: ${{ github.workflow }}
+        run: |
+          mkdir __out
+          dotnet pack AbbLab.Extensions -c Release -o __out --no-restore
+
+          dotnet nuget push "./__out/*.nupkg" --skip-duplicate -n \
+          -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+
+          dotnet nuget push "./__out/*.nupkg" --skip-duplicate -n \
+          -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -k ${{ secrets.GITHUB_TOKEN }}
+
+          rm -rf __out
