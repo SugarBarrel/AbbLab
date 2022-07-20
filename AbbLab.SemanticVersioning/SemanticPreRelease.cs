@@ -34,6 +34,7 @@ namespace AbbLab.SemanticVersioning
         public int Number => text is null ? number : throw new InvalidOperationException(Exceptions.PreReleaseNotNumeric);
 
         public static readonly SemanticPreRelease Zero = new SemanticPreRelease(0);
+        internal static readonly SemanticPreRelease[] ZeroArray = { new SemanticPreRelease(0) };
 
         [Pure] public bool Equals(SemanticPreRelease other)
             => text is null ? other.text is null && number == other.number : text == other.text;
