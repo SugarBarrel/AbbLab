@@ -4,8 +4,11 @@ namespace AbbLab.SemanticVersioning
 {
     public sealed class PrimitiveComparator : Comparator
     {
-        private PrimitiveComparator(SemanticVersion operand, PrimitiveOperator @operator)
+        public PrimitiveComparator(SemanticVersion operand, PrimitiveOperator @operator)
         {
+            if (@operator is not PrimitiveOperator.GreaterThan and not PrimitiveOperator.GreaterThanOrEqual
+                and not PrimitiveOperator.LessThan and not PrimitiveOperator.LessThanOrEqual and not PrimitiveOperator.Equal)
+                throw new ArgumentException($"{@operator} is not a valid primitive operator.", nameof(@operator));
             Operand = operand;
             Operator = @operator;
         }
@@ -26,14 +29,6 @@ namespace AbbLab.SemanticVersioning
             PrimitiveOperator.Equal => version == Operand,
             _ => throw new NotImplementedException(),
         };
-
-        public static PrimitiveComparator Create(SemanticVersion operand, PrimitiveOperator @operator)
-        {
-            if (@operator is not PrimitiveOperator.GreaterThan and not PrimitiveOperator.GreaterThanOrEqual
-                and not PrimitiveOperator.LessThan and not PrimitiveOperator.LessThanOrEqual and not PrimitiveOperator.Equal)
-                throw new ArgumentException($"{@operator} is not a valid primitive operator.", nameof(@operator));
-            return new PrimitiveComparator(operand, @operator);
-        }
 
         public static PrimitiveComparator GreaterThan(SemanticVersion operand)
             => new PrimitiveComparator(operand, PrimitiveOperator.GreaterThan);
