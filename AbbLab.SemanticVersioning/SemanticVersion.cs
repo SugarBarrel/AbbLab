@@ -40,6 +40,8 @@ namespace AbbLab.SemanticVersioning
             }
         }
 
+        public bool IsPreRelease => _preReleases.Length > 0;
+
         // Internal constructor for performance reasons
         internal SemanticVersion(int major, int minor, int patch, SemanticPreRelease[]? preReleases, string[]? buildMetadata)
         {
