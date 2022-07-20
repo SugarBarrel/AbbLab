@@ -14,6 +14,9 @@ namespace AbbLab.SemanticVersioning
         public PrimitiveOperator Operator { get; }
         public override bool IsPrimitive => true;
 
+        public override bool HasPreReleaseVersion(int major, int minor, int patch)
+            => Operand.IsPreRelease && Operand.Major == major && Operand.Minor == minor && Operand.Patch == patch;
+
         public override bool Satisfies(SemanticVersion version) => Operator switch
         {
             PrimitiveOperator.GreaterThan => version > Operand,
@@ -21,19 +24,6 @@ namespace AbbLab.SemanticVersioning
             PrimitiveOperator.LessThan => version < Operand,
             PrimitiveOperator.LessThanOrEqual => version <= Operand,
             PrimitiveOperator.Equal => version == Operand,
-            _ => throw new NotImplementedException(),
-        };
-
-        protected internal override VersionRange Negate() => Operator switch
-        {
-            PrimitiveOperator.GreaterThan => new PrimitiveComparator(Operand, PrimitiveOperator.LessThanOrEqual),
-            PrimitiveOperator.GreaterThanOrEqual => new PrimitiveComparator(Operand, PrimitiveOperator.LessThan),
-            PrimitiveOperator.LessThan => new PrimitiveComparator(Operand, PrimitiveOperator.GreaterThanOrEqual),
-            PrimitiveOperator.LessThanOrEqual => new PrimitiveComparator(Operand, PrimitiveOperator.GreaterThan),
-            PrimitiveOperator.Equal => new VersionRange(
-                new PrimitiveComparator(Operand, PrimitiveOperator.LessThan),
-                new PrimitiveComparator(Operand, PrimitiveOperator.GreaterThan)
-            ),
             _ => throw new NotImplementedException(),
         };
 

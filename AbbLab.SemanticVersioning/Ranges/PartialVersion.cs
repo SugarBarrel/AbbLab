@@ -14,8 +14,8 @@ namespace AbbLab.SemanticVersioning
         public PartialComponent Minor { get; }
         public PartialComponent Patch { get; }
 
-        private readonly SemanticPreRelease[] _preReleases;
-        private ReadOnlyCollection<SemanticPreRelease>? _preReleasesReadonly;
+        internal readonly SemanticPreRelease[] _preReleases;
+        internal ReadOnlyCollection<SemanticPreRelease>? _preReleasesReadonly;
         public ReadOnlyCollection<SemanticPreRelease> PreReleases
         {
             get
@@ -28,7 +28,7 @@ namespace AbbLab.SemanticVersioning
         }
 
         internal readonly string[] _buildMetadata;
-        private ReadOnlyCollection<string>? _buildMetadataReadonly;
+        internal ReadOnlyCollection<string>? _buildMetadataReadonly;
         public ReadOnlyCollection<string> BuildMetadata
         {
             get
@@ -39,6 +39,8 @@ namespace AbbLab.SemanticVersioning
                     : new ReadOnlyCollection<string>(_buildMetadata);
             }
         }
+
+        public bool IsPreRelease => _preReleases.Length > 0;
 
         // Internal constructor for performance reasons
         internal PartialVersion(PartialComponent major, PartialComponent minor, PartialComponent patch,
@@ -93,6 +95,16 @@ namespace AbbLab.SemanticVersioning
             _preReleases = Array.Empty<SemanticPreRelease>();
             _buildMetadata = Array.Empty<string>();
         }
+        public PartialVersion(SemanticVersion semanticVersion)
+        {
+            Major = new PartialComponent(semanticVersion.Major);
+            Minor = new PartialComponent(semanticVersion.Minor);
+            Patch = new PartialComponent(semanticVersion.Patch);
+            _preReleases = semanticVersion._preReleases;
+            _preReleasesReadonly = semanticVersion._preReleasesReadonly;
+            _buildMetadata = semanticVersion._buildMetadata;
+            _buildMetadataReadonly = semanticVersion._buildMetadataReadonly;
+        }
 
         [Pure] [return: NotNullIfNotNull("systemVersion")]
         public static explicit operator PartialVersion?(Version? systemVersion)
@@ -100,7 +112,13 @@ namespace AbbLab.SemanticVersioning
         [Pure] [return: NotNullIfNotNull("version")]
         public static explicit operator Version?(PartialVersion? version)
             => version is null ? null : new Version(version.Major.GetValueOrZero(), version.Minor.GetValueOrZero(), version.Patch.GetValueOrZero());
-        // TODO: SemanticVersion conversion operators
+
+        [Pure] [return: NotNullIfNotNull("semanticVersion")]
+        public static explicit operator PartialVersion?(SemanticVersion? semanticVersion)
+            => semanticVersion is null ? null : new PartialVersion(semanticVersion);
+        [Pure] [return: NotNullIfNotNull("partialVersion")]
+        public static explicit operator SemanticVersion?(PartialVersion? partialVersion)
+            => partialVersion is null ? null : new SemanticVersion(partialVersion);
 
         [Pure] public bool Equals(PartialVersion? other)
         {

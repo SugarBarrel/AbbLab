@@ -30,17 +30,19 @@ namespace AbbLab.SemanticVersioning
         public static readonly PartialComponent LowercaseX = new PartialComponent('x');
         public static readonly PartialComponent UppercaseX = new PartialComponent('X');
         public static readonly PartialComponent Star = new PartialComponent('*');
+        public static readonly PartialComponent Omitted = new PartialComponent(-1, default);
 
-        public bool IsNumeric => _value >= 0;
-        public bool IsWildcard => _value < 0;
-        public int Number => _value >= 0 ? _value : throw new InvalidOperationException(Exceptions.ComponentNotNumeric);
-        public char Wildcard => _value < 0 ? (char)-_value : throw new InvalidOperationException(Exceptions.ComponentNotWildcard);
+        public bool IsNumeric => _value > -1;
+        public bool IsOmitted => _value == -1;
+        public bool IsWildcard => _value < -1;
+        public int Number => _value > -1 ? _value : throw new InvalidOperationException(Exceptions.ComponentNotNumeric);
+        public char Wildcard => _value < -1 ? (char)-_value : throw new InvalidOperationException(Exceptions.ComponentNotWildcard);
 
         public int GetValueOrZero() => Math.Max(_value, 0);
 
         [Pure] public bool Equals(PartialComponent other)
         {
-            if (_value < 0) return other._value < 0;
+            if (_value < -1) return other._value < -1;
             return _value == other._value;
         }
         [Pure] public override bool Equals(object? obj)
@@ -49,8 +51,10 @@ namespace AbbLab.SemanticVersioning
 
         [Pure] public int CompareTo(PartialComponent other)
         {
-            if (_value < 0) return other._value < 0 ? 0 : -1;
-            if (other._value < 0) return 1;
+            if (_value is -1) return other._value is -1 ? 0 : -1;
+            if (other._value is -1) return 1;
+            if (_value < -1) return other._value < -1 ? 0 : -1;
+            if (other._value < -1) return 1;
             return _value - other._value;
         }
         [Pure] int IComparable.CompareTo(object? obj)
@@ -67,8 +71,12 @@ namespace AbbLab.SemanticVersioning
         [Pure] public static bool operator >=(PartialComponent a, PartialComponent b) => a.CompareTo(b) >= 0;
         [Pure] public static bool operator <=(PartialComponent a, PartialComponent b) => a.CompareTo(b) <= 0;
 
-        [Pure] public override string ToString()
-            => _value < 0 ? ((char)-_value).ToString() : Utility.SimpleToString(_value);
+        [Pure] public override string ToString() => _value switch
+        {
+            < -1 => ((char)-_value).ToString(),
+            0 => string.Empty,
+            _ => Utility.SimpleToString(_value)
+        };
         [Pure] public string ToString(ReadOnlySpan<char> format)
         {
             int length = format.Length;
@@ -77,13 +85,13 @@ namespace AbbLab.SemanticVersioning
 
             for (int i = 0; i < length; i++)
             {
-                if (format[i] is not 'x' and not 'X' and not '*' and not '0')
+                if (format[i] is not 'x' and not 'X' and not '*' and not '0' and not '_')
                     return ToStringBuilder(format);
             }
             if (IsNumeric) return Utility.SimpleToString(_value);
-            return ToStringSingleWildcard(format).ToString();
+            return ToStringNotNumeric(format);
         }
-        [Pure] private char ToStringSingleWildcard(ReadOnlySpan<char> format)
+        [Pure] private char ToStringWildcard(ReadOnlySpan<char> format)
         {
             char myWildcard = (char)-_value;
 
@@ -94,6 +102,20 @@ namespace AbbLab.SemanticVersioning
                 if (c == myWildcard) return myWildcard;
             }
             return format[lastIndex];
+        }
+        [Pure] private string ToStringNotNumeric(ReadOnlySpan<char> format)
+        {
+            if (_value is -1 && format.IndexOf('_') is not -1) return string.Empty;
+            char myWildcard = (char)-_value;
+
+            int lastIndex = format.Length - 1;
+            for (int i = 0; i < lastIndex; i++)
+            {
+                char c = format[i];
+                if (c == myWildcard) return myWildcard.ToString();
+            }
+            char lastFormat = format[lastIndex];
+            return lastFormat is '_' ? string.Empty : lastFormat.ToString();
         }
         [Pure] private string ToStringBuilder(ReadOnlySpan<char> format)
         {
@@ -127,12 +149,13 @@ namespace AbbLab.SemanticVersioning
                         quote = c;
                         quoteStart = pos + 1;
                         break;
-                    case 'x' or 'X' or '*' or '0':
+                    case 'x' or 'X' or '*' or '0' or '_':
                         int start = pos++;
-                        while (pos < length && format[pos] is 'x' or 'X' or '*' or '0')
+                        while (pos < length && format[pos] is 'x' or 'X' or '*' or '0' or '_')
                             pos++;
                         if (IsNumeric) sb.SimpleAppend(_value);
-                        else sb.Append(ToStringSingleWildcard(format[start..pos]));
+                        else if (IsWildcard) sb.Append(ToStringWildcard(format[start..pos]));
+                        else if (format[start..pos].IndexOf('_') is -1) sb.Append(c);
                         continue;
                 }
                 pos++;
@@ -176,6 +199,11 @@ namespace AbbLab.SemanticVersioning
                 case SemanticOptions.AllowTrailingWhite:
                     text = text.TrimEnd();
                     break;
+            }
+            if (text.Length is 0)
+            {
+                component = Omitted;
+                return SemanticErrorCode.Success;
             }
             if (text.Length is 1) return ParseInternal(text[0], out component);
 

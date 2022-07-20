@@ -12,9 +12,10 @@ namespace AbbLab.SemanticVersioning
         public ComparatorSet(IEnumerable<Comparator> comparators)
             => _comparators = comparators.ToArray();
 
-        public static implicit operator ComparatorSet(Comparator comparator) => new ComparatorSet(comparator);
+        public static readonly ComparatorSet Empty = new ComparatorSet(PrimitiveComparator.LessThan(SemanticVersion.MinValue));
+        public static readonly ComparatorSet All = new ComparatorSet(PrimitiveComparator.GreaterThanOrEqual(SemanticVersion.MinValue));
 
-        public static readonly ComparatorSet Empty = new ComparatorSet(Enumerable.Empty<Comparator>());
+        public static implicit operator ComparatorSet(Comparator comparator) => new ComparatorSet(comparator);
 
         private readonly Comparator[] _comparators;
         private ReadOnlyCollection<Comparator>? _comparatorsReadonly;
@@ -31,33 +32,15 @@ namespace AbbLab.SemanticVersioning
 
         public bool Satisfies(SemanticVersion version, bool includePreReleases)
         {
-            // TODO: includePreReleases
-            for (int i = 0, length = _comparators.Length; i < length; i++)
-                if (!_comparators[i].Satisfies(version))
-                    return false;
-            return true;
+            if (!includePreReleases && version.IsPreRelease)
+            {
+                bool canCompare = Array.Exists(_comparators, c => c.HasPreReleaseVersion(version.Major, version.Minor, version.Patch));
+                if (!canCompare) return false;
+            }
+            return Array.TrueForAll(_comparators, c => c.Satisfies(version));
         }
         public bool Satisfies(SemanticVersion version)
             => Satisfies(version, false);
-
-        public static ComparatorSet operator &(ComparatorSet set, Comparator comparator)
-            => new ComparatorSet(set.Comparators.Append(comparator));
-        public static ComparatorSet operator &(Comparator comparator, ComparatorSet set)
-            => new ComparatorSet(set.Comparators.Prepend(comparator));
-        public static ComparatorSet operator &(ComparatorSet a, ComparatorSet b)
-            => new ComparatorSet(a.Comparators.Concat(b.Comparators));
-
-        public static VersionRange operator |(ComparatorSet set, Comparator comparator)
-            => new VersionRange(set, new ComparatorSet(comparator));
-        public static VersionRange operator |(Comparator comparator, ComparatorSet set)
-            => new VersionRange(new ComparatorSet(comparator), set);
-        public static VersionRange operator |(ComparatorSet a, ComparatorSet b)
-            => new VersionRange(a, b);
-
-        public ComparatorSet Simplify()
-        {
-            throw new NotImplementedException();
-        }
 
     }
 }
