@@ -163,7 +163,7 @@ namespace AbbLab.Serialization.Tests
             });
 
         }
-        public static void TestWriterReader(Action<QuickXmlWriter> writeAction, string expectedOutput, Action<QuickXmlReader> readAction)
+        private static void TestWriterReader(Action<QuickXmlWriter> writeAction, string expectedOutput, Action<QuickXmlReader> readAction)
         {
             StringWriter stringWriter = new StringWriter();
             QuickXmlWriter quickXmlWriter = new QuickXmlWriter(stringWriter)
