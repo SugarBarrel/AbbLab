@@ -14,8 +14,8 @@ namespace AbbLab.SemanticVersioning
         public int Minor { get; }
         public int Patch { get; }
 
-        private readonly SemanticPreRelease[] _preReleases;
-        private ReadOnlyCollection<SemanticPreRelease>? _preReleasesReadonly;
+        internal readonly SemanticPreRelease[] _preReleases;
+        internal ReadOnlyCollection<SemanticPreRelease>? _preReleasesReadonly;
         public ReadOnlyCollection<SemanticPreRelease> PreReleases
         {
             get
@@ -28,7 +28,7 @@ namespace AbbLab.SemanticVersioning
         }
 
         internal readonly string[] _buildMetadata;
-        private ReadOnlyCollection<string>? _buildMetadataReadonly;
+        internal ReadOnlyCollection<string>? _buildMetadataReadonly;
         public ReadOnlyCollection<string> BuildMetadata
         {
             get
@@ -91,6 +91,16 @@ namespace AbbLab.SemanticVersioning
             Patch = Math.Max(systemVersion.Build, 0);
             _preReleases = Array.Empty<SemanticPreRelease>();
             _buildMetadata = Array.Empty<string>();
+        }
+        public SemanticVersion(PartialVersion partialVersion)
+        {
+            Major = partialVersion.Major.GetValueOrZero();
+            Minor = partialVersion.Minor.GetValueOrZero();
+            Patch = partialVersion.Patch.GetValueOrZero();
+            _preReleases = partialVersion._preReleases;
+            _preReleasesReadonly = partialVersion._preReleasesReadonly;
+            _buildMetadata = partialVersion._buildMetadata;
+            _buildMetadataReadonly = partialVersion._buildMetadataReadonly;
         }
 
         [Pure] [return: NotNullIfNotNull("systemVersion")]
