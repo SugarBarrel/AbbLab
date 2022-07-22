@@ -16,13 +16,7 @@ namespace AbbLab.SemanticVersioning
 
         protected override (PrimitiveComparator?, PrimitiveComparator?) ConvertToPrimitives()
         {
-            (PrimitiveComparator?, PrimitiveComparator?) tuple = (ConvertFrom(From), ConvertTo(To));
-            if (tuple.Item1 is null && tuple.Item2 is not null)
-            {
-                tuple.Item1 = tuple.Item2;
-                tuple.Item2 = null;
-            }
-            return tuple;
+            return (ConvertFrom(From), ConvertTo(To));
 
             static PrimitiveComparator? ConvertFrom(PartialVersion from)
             {
